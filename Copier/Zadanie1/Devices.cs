@@ -93,7 +93,7 @@ namespace Zadanie1
             }
         }
 
-        public void Scan(out IDocument document, IDocument.FormatType formatType)
+        public void Scan(out IDocument document, IDocument.FormatType formatType = IDocument.FormatType.PDF)
         {
             document = null;
 
