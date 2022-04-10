@@ -57,36 +57,73 @@ namespace Zadanie2
 
     public class MultiFunctionalDevice : IPrinter, IScanner, IFax
     {
-        public int Counter => throw new NotImplementedException();
-
+        public int Counter { get; set; } = 0;
+        public int PrintCounter { get; set; } = 0;
+        public int ScanCounter { get; set; } = 0;
+        
+        protected IDevice.State state = IDevice.State.off;
         public IDevice.State GetState()
         {
-            throw new NotImplementedException();
+            return state;
         }
-
         public void PowerOff()
         {
-            throw new NotImplementedException();
+            if (state == IDevice.State.on)
+            {
+                state = IDevice.State.off;
+                Console.WriteLine("... Device is off !");
+            }
+            else
+                return;
         }
-
         public void PowerOn()
         {
-            throw new NotImplementedException();
+            if (state == IDevice.State.off)
+            {
+                state = IDevice.State.on;
+                Counter++;
+            }
+            else
+                return;
         }
-
         public void Print(in IDocument document)
         {
-            throw new NotImplementedException();
+            if (state == IDevice.State.on)
+            {
+                Console.WriteLine($"{DateTime.Now} Print: {document.GetFileName()}");
+                PrintCounter++;
+            }
         }
-
-        public void Scan(out IDocument document, IDocument.FormatType formatType)
+        public void Scan(out IDocument document, IDocument.FormatType formatType = IDocument.FormatType.PDF)
         {
-            throw new NotImplementedException();
-        }
+            document = null;
 
+            if (state == IDevice.State.on)
+            {
+                if (formatType == IDocument.FormatType.PDF)
+                    document = new PDFDocument("aaa.pdf");
+                else if (formatType == IDocument.FormatType.JPG)
+                    document = new ImageDocument("aaa.jpg");
+                else
+                    document = new TextDocument("aaa.txt");
+
+                ScanCounter++;
+                Console.WriteLine($"{DateTime.Now} Scan: {document.GetFileName()}");
+            }
+        }
+        public void ScanAndPrint()
+        {
+            if (state == IDevice.State.on)
+            {
+                IDocument document;
+                Scan(out document, formatType: IDocument.FormatType.JPG);
+                Print(document);
+            }
+        }
         public void Send(in IDocument document)
         {
-            throw new NotImplementedException();
+            if (state == IDevice.State.on)
+                Console.WriteLine($"{DateTime.Now} Send: {document.GetFileName()}");
         }
     }
 
@@ -130,6 +167,7 @@ namespace Zadanie2
             if(state == IDevice.State.on)
             {
                 Console.WriteLine($"{DateTime.Now} Print: {document.GetFileName()}");
+                PrintCounter++;
             }
         }
 
@@ -152,9 +190,12 @@ namespace Zadanie2
         }
         public void ScanAndPrint() 
         {
-            IDocument document;
-            Scan(out document, formatType: IDocument.FormatType.JPG);
-            Print(document); 
+            if (state == IDevice.State.on)
+            {
+                IDocument document;
+                Scan(out document, formatType: IDocument.FormatType.JPG);
+                Print(document);
+            }
         }
     }
 

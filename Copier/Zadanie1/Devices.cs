@@ -57,7 +57,7 @@ namespace Zadanie1
         public int ScanCounter { get; set; } = 0;
 
         protected IDevice.State state = IDevice.State.off;
-        
+
         public IDevice.State GetState()
         {
             return state;
@@ -87,9 +87,10 @@ namespace Zadanie1
 
         public void Print(in IDocument document)
         {
-            if(state == IDevice.State.on)
+            if (state == IDevice.State.on)
             {
                 Console.WriteLine($"{DateTime.Now} Print: {document.GetFileName()}");
+                PrintCounter++;
             }
         }
 
@@ -103,18 +104,21 @@ namespace Zadanie1
                     document = new PDFDocument("aaa.pdf");
                 else if (formatType == IDocument.FormatType.JPG)
                     document = new ImageDocument("aaa.jpg");
-                else 
+                else
                     document = new TextDocument("aaa.txt");
 
                 ScanCounter++;
                 Console.WriteLine($"{DateTime.Now} Scan: {document.GetFileName()}");
             }
         }
-        public void ScanAndPrint() 
+        public void ScanAndPrint()
         {
-            IDocument document;
-            Scan(out document, formatType: IDocument.FormatType.JPG);
-            Print(document); 
+            if (state == IDevice.State.on)
+            {
+                IDocument document;
+                Scan(out document, formatType: IDocument.FormatType.JPG);
+                Print(document);
+            }
         }
     }
 
