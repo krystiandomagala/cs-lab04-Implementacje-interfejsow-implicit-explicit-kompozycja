@@ -3,7 +3,7 @@ using System;
 using System.IO;
 using Zadanie2;
 
-namespace Zadanie1UnitTests
+namespace Zadanie2UnitTests
 {
     public class ConsoleRedirectionToStringWriter : IDisposable
     {
