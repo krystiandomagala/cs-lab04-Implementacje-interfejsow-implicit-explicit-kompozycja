@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.IO;
+using Zadanie3;
 
 namespace Zadanie1UnitTests
 {
@@ -35,7 +36,9 @@ namespace Zadanie1UnitTests
         [TestMethod]
         public void Copier_GetState_StateOff()
         {
-            var copier = new Copier();
+            var priner = new Printer();
+            var scanner = new Scanner();
+            var copier = new Copier(priner, scanner);
             copier.PowerOff();
 
             Assert.AreEqual(IDevice.State.off, copier.GetState());
@@ -44,7 +47,9 @@ namespace Zadanie1UnitTests
         [TestMethod]
         public void Copier_GetState_StateOn()
         {
-            var copier = new Copier();
+            var priner = new Printer();
+            var scanner = new Scanner();
+            var copier = new Copier(priner, scanner);
             copier.PowerOn();
 
             Assert.AreEqual(IDevice.State.on, copier.GetState());
@@ -56,7 +61,9 @@ namespace Zadanie1UnitTests
         [TestMethod]
         public void Copier_Print_DeviceOn()
         {
-            var copier = new Copier();
+            var priner = new Printer();
+            var scanner = new Scanner();
+            var copier = new Copier(priner, scanner);
             copier.PowerOn();
 
             var currentConsoleOut = Console.Out;
@@ -75,7 +82,9 @@ namespace Zadanie1UnitTests
         [TestMethod]
         public void Copier_Print_DeviceOff()
         {
-            var copier = new Copier();
+            var priner = new Printer();
+            var scanner = new Scanner();
+            var copier = new Copier(priner, scanner);
             copier.PowerOff();
 
             var currentConsoleOut = Console.Out;
@@ -94,7 +103,9 @@ namespace Zadanie1UnitTests
         [TestMethod]
         public void Copier_Scan_DeviceOff()
         {
-            var copier = new Copier();
+            var priner = new Printer();
+            var scanner = new Scanner();
+            var copier = new Copier(priner, scanner);
             copier.PowerOff();
 
             var currentConsoleOut = Console.Out;
@@ -113,7 +124,9 @@ namespace Zadanie1UnitTests
         [TestMethod]
         public void Copier_Scan_DeviceOn()
         {
-            var copier = new Copier();
+            var priner = new Printer();
+            var scanner = new Scanner();
+            var copier = new Copier(priner, scanner);
             copier.PowerOn();
 
             var currentConsoleOut = Console.Out;
@@ -132,7 +145,9 @@ namespace Zadanie1UnitTests
         [TestMethod]
         public void Copier_Scan_FormatTypeDocument()
         {
-            var copier = new Copier();
+            var priner = new Printer();
+            var scanner = new Scanner();
+            var copier = new Copier(priner, scanner);
             copier.PowerOn();
 
             var currentConsoleOut = Console.Out;
@@ -162,7 +177,9 @@ namespace Zadanie1UnitTests
         [TestMethod]
         public void Copier_ScanAndPrint_DeviceOn()
         {
-            var copier = new Copier();
+            var priner = new Printer();
+            var scanner = new Scanner();
+            var copier = new Copier(priner, scanner);
             copier.PowerOn();
 
             var currentConsoleOut = Console.Out;
@@ -182,7 +199,9 @@ namespace Zadanie1UnitTests
         [TestMethod]
         public void Copier_ScanAndPrint_DeviceOff()
         {
-            var copier = new Copier();
+            var priner = new Printer();
+            var scanner = new Scanner();
+            var copier = new Copier(priner, scanner);
             copier.PowerOff();
 
             var currentConsoleOut = Console.Out;
@@ -199,7 +218,9 @@ namespace Zadanie1UnitTests
         [TestMethod]
         public void Copier_PrintCounter()
         {
-            var copier = new Copier();
+            var priner = new Printer();
+            var scanner = new Scanner();
+            var copier = new Copier(priner, scanner);
             copier.PowerOn();
 
             IDocument doc1 = new PDFDocument("aaa.pdf");
@@ -224,7 +245,9 @@ namespace Zadanie1UnitTests
         [TestMethod]
         public void Copier_ScanCounter()
         {
-            var copier = new Copier();
+            var priner = new Printer();
+            var scanner = new Scanner();
+            var copier = new Copier(priner, scanner);
             copier.PowerOn();
 
             IDocument doc1;
@@ -250,7 +273,9 @@ namespace Zadanie1UnitTests
         [TestMethod]
         public void Copier_PowerOnCounter()
         {
-            var copier = new Copier();
+            var priner = new Printer();
+            var scanner = new Scanner();
+            var copier = new Copier(priner, scanner);
             copier.PowerOn();
             copier.PowerOn();
             copier.PowerOn();
@@ -278,6 +303,104 @@ namespace Zadanie1UnitTests
 
             // 3 w³¹czenia
             Assert.AreEqual(3, copier.Counter);
+        }
+
+        [TestMethod]
+        public void MultidimensionalDevice_Send_DeviceOff()
+        {
+            var priner = new Printer();
+            var scanner = new Scanner();
+            var fax = new Fax();
+            var MultidimensionalDevice = new MultidimensionalDevice(priner, scanner, fax);
+            MultidimensionalDevice.PowerOff();
+
+            var currentConsoleOut = Console.Out;
+            currentConsoleOut.Flush();
+            using (var consoleOutput = new ConsoleRedirectionToStringWriter())
+            {
+                IDocument doc = new PDFDocument("aaa.pdf");
+                MultidimensionalDevice.ScanAndPrint();
+                MultidimensionalDevice.Send(doc);
+                Assert.IsFalse(consoleOutput.GetOutput().Contains("Scan"));
+                Assert.IsFalse(consoleOutput.GetOutput().Contains("Print"));
+                Assert.IsFalse(consoleOutput.GetOutput().Contains("Send"));
+            }
+            Assert.AreEqual(currentConsoleOut, Console.Out);
+        }
+
+        [TestMethod]
+        public void Fax_Send_DeviceOn()
+        {
+
+            var fax = new Fax();
+            fax.PowerOn();
+
+            var currentConsoleOut = Console.Out;
+            currentConsoleOut.Flush();
+            using (var consoleOutput = new ConsoleRedirectionToStringWriter())
+            {
+                IDocument doc = new PDFDocument("aaa.pdf");
+                fax.Send(doc);
+                Assert.IsTrue(consoleOutput.GetOutput().Contains("Send"));
+            }
+            Assert.AreEqual(currentConsoleOut, Console.Out);
+        }
+        [TestMethod]
+        public void MultidimensionalDevice_PrintCounter()
+        {
+            var printer = new Printer();
+            var scanner = new Scanner();
+            var fax = new Fax();
+            var MultidimensionalDevice = new MultidimensionalDevice(printer, scanner, fax);
+
+            MultidimensionalDevice.PowerOn();
+            MultidimensionalDevice.PowerOn();
+            MultidimensionalDevice.PowerOn();
+
+            IDocument doc1;
+            MultidimensionalDevice.Scan(out doc1);
+            IDocument doc2;
+            MultidimensionalDevice.Scan(out doc2);
+
+            MultidimensionalDevice.PowerOff();
+            MultidimensionalDevice.PowerOff();
+            MultidimensionalDevice.PowerOff();
+            MultidimensionalDevice.PowerOn();
+
+            IDocument doc3 = new ImageDocument("aaa.jpg");
+            MultidimensionalDevice.Print(in doc3);
+
+            MultidimensionalDevice.PowerOff();
+            MultidimensionalDevice.Print(in doc3);
+            MultidimensionalDevice.Scan(out doc1);
+            MultidimensionalDevice.PowerOn();
+
+            MultidimensionalDevice.ScanAndPrint();
+            MultidimensionalDevice.ScanAndPrint();
+
+            // 3 w³¹czenia
+            Assert.AreEqual(3, MultidimensionalDevice.Counter);
+        }
+
+        [TestMethod]
+        public void MultidimensionalDevice_FaxCounter()
+        {
+            var printer = new Printer();
+            var scanner = new Scanner();
+
+            var fax = new Fax();
+            var multidimensionalDevice = new MultidimensionalDevice(printer, scanner, fax);
+            multidimensionalDevice.PowerOn();
+            IDocument doc1 = new PDFDocument("aaa.pdf");
+            multidimensionalDevice.Send(doc1);
+            fax.PowerOff();
+            multidimensionalDevice.Send(doc1);
+            fax.PowerOn();
+            multidimensionalDevice.Send(doc1);
+
+
+            // 2 wysy³ania
+            Assert.AreEqual(2, multidimensionalDevice.SendCounter);
         }
 
     }

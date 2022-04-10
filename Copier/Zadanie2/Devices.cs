@@ -73,8 +73,7 @@ namespace Zadanie2
                 state = IDevice.State.off;
                 Console.WriteLine("... Device is off !");
             }
-            else
-                return;
+      
         }
         public void PowerOn()
         {
@@ -82,9 +81,9 @@ namespace Zadanie2
             {
                 state = IDevice.State.on;
                 Counter++;
+                Console.WriteLine("Device is on ...");
             }
-            else
-                return;
+
         }
         public void Print(in IDocument document)
         {
